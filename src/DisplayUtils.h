@@ -1,26 +1,12 @@
-/*
-MIT License
-
-Copyright (c) 2022 Philip Fletcher <philip.fletcher@stutchbury.com>
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice must be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+/**
+ * Defines class DisplayArea for working with areas on displays (shocking, eh?)
+ * and DisplayNumber class for fast flicker-free drawing of numbers.
+ *
+ * GPLv2 Licence https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt
+ * 
+ * Copyright (c) 2022 Philip Fletcher <philip.fletcher@stutchbury.com>
+ * 
+ */
 
 
 #ifndef DisplayUtils_h
@@ -55,8 +41,8 @@ protected:
   uint16_t _y = 0;
   uint16_t _w = 0;
   uint16_t _h = 0;
-  DisplayArea() {} //Used only by sub classes
 public:
+  DisplayArea() {} //Used only by sub classes
   /**
    * Construct a new area
    */
@@ -263,13 +249,18 @@ private:
   */
   void setMaxTextBounds() {
     int16_t  x1, y1;
-    uint16_t w, h;
+    uint16_t w1, h1;
     char digit[2]; //For UNO & other AVRs, getTextBounds only accepts char array
+    gfx.setFont(font);
+    gfx.setTextSize(1);
+    digitWidth = 0;
+    w1 = 0;
     for (uint8_t i = 0; i < 10; i++) {
-      digit[0] = '0' + i; //Get the text representation of i
-      gfx.getTextBounds(digit, 0, 0, &x1, &y1, &w, &h); //Always use x=0, y=0 or y1 will be wrong
-      digitWidth = max(digitWidth, w + x1);
-      digitHeight = max(digitHeight, h);
+      digit[0] = ('0' + i); //Get the text representation of i
+      digit[1] = '\0'; //<-- This was a particularly nasty critter...
+      gfx.getTextBounds(digit, 0, 0, &x1, &y1, &w1, &h1); //Always use x=0, y=0 or y1 will be wrong
+      digitWidth = max(digitWidth, w1 + x1);
+      digitHeight = max(digitHeight, h1);
       digitBaseline = max(digitBaseline, abs(y1));
     }
   }
